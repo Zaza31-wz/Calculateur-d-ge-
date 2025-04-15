@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب العمر - الجزائرية</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <!-- html2canvas Library -->
+    <script src=" docile://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#28a745">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+            background-size: cover;
+        }
+        body.dark-mode {
+            background: linear-gradient(135deg, #1e1e1e, #121212);
+            color: #f0f0f0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        body.dark-mode .container {
+            background: rgba(30, 30, 30, 0.95);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode h1 {
+            color: #f0f0f0;
+        }
+        .icon {
+            font-size: 2em;
+            color: #2c3e50;
+            margin: 10px;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .icon {
+            color: #f0f0f0;
+        }
+        .circle-input {
+            position: relative;
+            margin: 10px;
+        }
+        .circle-input input[type="text"], .circle-input select {
+            padding: 12px 40px 12px 20px;
+            border: 2px solid #28a745;
+            border-radius: 50px;
+            font-size: 1em;
+            width: 80%;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            text-align: center;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .circle-input input:invalid {
+            border-color: #dc3545;
+        }
+        .circle-input i {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: #28a745;
+        }
+        body.dark-mode .circle-input input[type="text"], 
+        body.dark-mode .circle-input select {
+            background: rgba(30, 30, 30, 0.8);
+            color: #f0f0f0;
+            border-color: #dc3545;
+        }
+        body.dark-mode .circle-input i {
+            color: #dc3545;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        button.red {
+            background-color: #dc3545;
+        }
+        button.red:hover {
+            background-color: #c82333;
+        }
+        button.white {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        button.white:hover {
+            background-color: #e2e6ea;
+        }
+        body.dark-mode button {
+            background-color: #dc3545;
+        }
+        body.dark-mode button:hover {
+            background-color: #c82333;
+        }
+        body.dark-mode button.white {
+            background-color: #343a40;
+            color: #f0f0f0;
+        }
+        body.dark-mode button.white:hover {
+            background-color: #495057;
+        }
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .social-share button {
+            background-color: #007bff;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .social-share button:hover {
+            background-color: #0056b3;
+        }
+        body.dark-mode .social-share button {
+            background-color: #28a745;
+        }
+        body.dark-mode .social-share button:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.4em;
+            color: #2c3e50;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode #result {
+            color: #f0f0f0;
+        }
+        .funny-text {
+            font-style: italic;
+            color: #dc3545;
+            margin-top: 10px;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .funny-text {
+            color: #ff6b6b;
+        }
+        #zodiacSign, #funStats, #advice, #gameResult, #visitorCounter, #historyContainer,
+        #memoriesContainer, #friendResult, #statsContainer {
+            margin-top: 15px;
+            font-size: 1.2em;
+            color: #28a745;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode #zodiacSign, body.dark-mode #funStats, body.dark-mode #advice,
+        body.dark-mode #gameResult, body-dark-mode #visitorCounter, body.dark-mode #historyContainer,
+        body.dark-mode #memoriesContainer, body.dark-mode #friendResult, body.dark-mode #statsContainer {
+            color: #dc3545;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #6c757d;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .footer {
+            color: #adb5bd;
+        }
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .footer a {
+            color: #28a745;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .share-button, .qr-button, .certificate-button, .download-button, .print-button,
+        .calendar-button, .install-button, .friend-button {
+            background-color: #dc3545;
+            display: none;
+        }
+        .share-button:hover, .qr-button:hover, .certificate-button:hover, .download-button:hover,
+        .print-button:hover, .calendar-button:hover, .install-button:hover, .friend-button:hover {
+            background-color: #c82333;
+        }
+        body.dark-mode .share-button, body.dark-mode .qr-button, body.dark-mode .certificate-button,
+        body.dark-mode .download-button, body.dark-mode .print-button, body.dark-mode .calendar-button,
+        body.dark-mode .install-button, body.dark-mode .friend-button {
+            background-color: #28a745;
+        }
+        body.dark-mode .share-button:hover, body.dark-mode .qr-button:hover, body-dark-mode .certificate-button:hover,
+        body.dark-mode .download-button:hover, body.dark-mode .print-button:hover, body-dark-mode .calendar-button:hover,
+        body.dark-mode .install-button:hover, body-dark-mode .friend-button:hover {
+            background-color: #218838;
+        }
+        .share-container, .certificate-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            margin: 20px auto;
+            text-align: center;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+        }
+        .certificate-container {
+            max-width: 595px; /* A4 width in pixels at 72dpi */
+        }
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+            }
+            .container, .share-container, .dark-mode-toggle, button:not(.print-button) {
+                display: none;
+            }
+            .certificate-container {
+                display: block !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                border: none;
+                background: white;
+            }
+            .certificate-frame {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 20px;
+                box-sizing: border-box;
+                background: url('images/dz_logo.png') center / 50% no-repeat, white;
+            }
+        }
+        .share-container h2, .share-container p, .certificate-container h2, .certificate-container p {
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+        body.dark-mode .share-container, body.dark-mode .certificate-container {
+            background: rgba(30, 30, 30, 0.95);
+            box-shadow: 0 10px 30px rgbaestr: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        body.dark-mode .share-container h2, body.dark-mode .share-container p,
+        body.dark-mode .certificate-container h2, body.dark-mode .certificate-container p {
+            color: #f0f0f0;
+        }
+        .frame {
+            border: 10px solid transparent;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+        .certificate-frame {
+            background: url('images/dz_logo.png') center / 50% no-repeat, white;
+            min-height: 400px;
+            padding: 30px;
+        }
+        .frame.zellij {
+            border-image: url('images/zellij_pattern.png') 30 stretch;
+        }
+        .frame.tifinagh {
+            border-image: url('images/tifinagh_pattern.png') 30 stretch;
+        }
+        body.dark-mode .frame {
+            background: #1e1e1e;
+        }
+        .frame::after {
+            content: "مطور بواسطة: Abdelillahdris";
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1em;
+            color: #2c3e50;
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 0 10px;
+            transition: color 0.3s ease, background 0.3s ease;
+        }
+        body.dark-mode .frame::after {
+            color: #f0f0f0;
+            background: #1e1e1e;
+        }
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+        .dark-mode-toggle:hover {
+            background: #0056b3;
+        }
+        body.dark-mode .dark-mode-toggle {
+            background: #28a745;
+        }
+        body.dark-mode .dark-mode-toggle:hover {
+            background: #218838;
+        }
+        #qrCode {
+            margin: 20px auto;
+            display: none;
+        }
+        .history-container, .memories-container, .stats-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            display: none;
+        }
+        body.dark-mode .history-container, body.dark-mode .memories-container,
+        body.dark-mode .stats-container {
+            background: rgba(30, 30, 30, 0.8);
+        }
+        .history-container button, .memories-container button {
+            margin: 5px;
+        }
+        .memories-container img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .memories-container iframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+    <!-- Audio Elements -->
+    <audio id="clickSound" src="sounds/click.mp3"></audio>
+    <audio id="successSound" src="sounds/success.mp3"></audio>
+    <audio id="qrSound" src="sounds/qr.mp3"></audio>
+
+    <div class="container">
+        <!-- Icon for Fun -->
+        <div class="icon">
+            <i class="fas fa-birthday-cake"></i>
+        </div>
+        <h1>حساب العمر - بالطريقة الجزائرية 😎</h1>
+        <p>دخل تاريخ ميلادك واسمك، وخلينا نكتشفو عمرك! 🚀</p>
+        
+        <!-- Input for Name -->
+        <div class="circle-input">
+            <input type="text" id="userName" placeholder="اسمك" maxlength="50">
+            <i class="fas fa-user"></i>
+        </div>
+        
+        <!-- Input for Birthdate -->
+        <div class="circle-input">
+            <input type="text" id="birthdate" placeholder="DD/MM/YYYY" maxlength="10" pattern="\d{2}/\d{2}/\d{4}" required>
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        
+        <!-- Input for Custom Title -->
+        <div class="circle-input">
+            <input type="text" id="customTitle" placeholder="اختر لقبك (مثل بطل الحومة)">
+        </div>
+        
+        <!-- Select Dialect -->
+        <div class="circle-input">
+            <select id="dialect">
+                <option value="darja">دارجة جزائرية</option>
+                <option value="kabyle">قبايلية</option>
+            </select>
+            <i class="fas fa-language"></i>
+        </div>
+        
+        <!-- Frame Style Selector -->
+        <div class="circle-input">
+            <select id="frameStyle">
+                <option value="default">إطار افتراضي</option>
+                <option value="zellij">نمط زليج</option>
+                <option value="tifinagh">نمط تيفيناغ</option>
+            </select>
+            <i class="fas fa-border-style"></i>
+        </div>
+        
+        <!-- Background Color Selector -->
+        <div class="circle-input">
+            <select id="bgColor">
+                <option value="white">خلفية بيضاء</option>
+                <option value="green">خلفية خضراء</option>
+                <option value="red">خلفية حمراء</option>
+            </select>
+            <i class="fas fa-palette"></i>
+        </div>
+        
+        <!-- Button to Calculate Age -->
+        <button onclick="calculateAge()" class="red">
+            <i class="fas fa-calculator"></i> احسب العمر
+        </button>
+        
+        <!-- Result Display -->
+        <div id="result"></div>
+        <div class="funny-text" id="funnyComment"></div>
+        <div id="zodiacSign"></div>
+        <div id="funStats"></div>
+        <div id="advice"></div>
+        <div id="gameResult"></div>
+        <div id="visitorCounter"></div>
+        <div id="friendResult"></div>
+        
+        <!-- History Container -->
+        <div class="history-container" id="historyContainer">
+            <p id="historyEvent"></p>
+            <button onclick="prevEvent()" class="white"><i class="fas fa-arrow-right"></i> السابق</button>
+            <button onclick="nextEvent()" class="white"><i class="fas fa-arrow-left"></i> التالي</button>
+        </div>
+        
+        <!-- Memories Container -->
+        <div class="memories-container" id="memoriesContainer">
+            <p id="memoriesText"></p>
+            <div id="memoriesMedia"></div>
+            <button onclick="prevMemory()" class="white"><i class="fas fa-arrow-right"></i> السابق</button>
+            <button onclick="nextMemory()" class="white"><i class="fas fa-arrow-left"></i> التالي</button>
+        </div>
+        
+        <!-- Stats Container -->
+        <div class="stats-container" id="statsContainer">
+            <p id="statsVisitors"></p>
+            <p id="statsAges"></p>
+            <p id="statsDialects"></p>
+        </div>
+        
+        <!-- Game Container -->
+        <div class="game-container" id="gameContainer">
+            <p>اختبر عمرك! جاوب على هذا السؤال:</p>
+            <p id="gameQuestion"></p>
+            <button onclick="answerGame(true)">نعم</button>
+            <button onclick="answerGame(false)">لا</button>
+        </div>
+        
+        <!-- QR Code Container -->
+        <div id="qrCode"></div>
+        
+        <!-- Share Buttons -->
+        <button class="share-button" onclick="shareResult()"><i class="fas fa-image"></i> تحميل صورة</button>
+        <button class="download-button" onclick="downloadResult()"><i class="fas fa-file-download"></i> تحميل PDF</button>
+        <button class="print-button" onclick="printCertificate()"><i class="fas fa-print"></i> طباعة الشهادة</button>
+        <button class="friend-button" onclick="generateFriendLink()"><i class="fas fa-user-friends"></i> احسب عمر صاحبك</button>
+        <button class="calendar-button" onclick="addToGoogleCalendar()"><i class="fas fa-calendar-plus"></i> ضيف عيد ميلادي</button>
+        <button class="install-button" id="installButton" style="display: none;" onclick="installPWA()">
+            <i class="fas fa-download"></i> ثبّت على الهاتف
+        </button>
+        <button class="share-button" onclick="shareToAll()"><i class="fas fa-share-alt"></i> مشاركة في الكل</button>
+        <button class="qr-button" onclick="generateQR()"><i class="fas fa-qrcode"></i> رمز QR</button>
+        <button class="certificate-button" onclick="generateCertificate()"><i class="fas fa-trophy"></i> شهادة العمر</button>
+        <div class="social-share" id="socialShare" style="display: none;">
+            <button onclick="shareToWhatsApp()" title="مشاركة عبر WhatsApp"><i class="fab fa-whatsapp"></i></button>
+            <button onclick="shareToFacebook()" title="مشاركة عبر Facebook"><i class="fab fa-facebook"></i></button>
+            <button onclick="shareToX()" title="مشاركة عبر X"><i class="fab fa-x-twitter"></i></button>
+            <button onclick="shareToTelegram()" title="مشاركة عبر Telegram"><i class="fab fa-telegram"></i></button>
+            <button onclick="copyLink()" title="نسخ الرابط"><i class="fas fa-link"></i></button>
+        </div>
+        
+        <!-- Footer with Icon -->
+        <div class="footer">
+            <i class="fas fa-flag"></i> صنع في الجزائر بحب <i class="fas fa-heart"></i> | 
+            <a href="https://www.facebook.com/abdelillah.dris.2025" target="_blank">تواصل معنا</a>
+        </div>
+    </div>
+
+    <!-- Share Container (Hidden by Default) -->
+    <div class="share-container" id="shareContainer">
+        <div class="frame" id="shareFrame">
+            <img src="images/dz_logo.png" alt="شعار الجزائر" style="width: 100px; margin-bottom: 10px;">
+            <h2 id="shareResultText"></h2>
+            <p id="shareCommentText"></p>
+            <p id="shareZodiacSign"></p>
+            <p id="shareFunStats"></p>
+            <p id="shareAdvice"></p>
+            <p id="shareGameResult"></p>
+            <p id="shareDateText"></p>
+        </div>
+    </div>
+
+    <!-- Certificate Container (Hidden by Default) -->
+    <div class="certificate-container" id="certificateContainer">
+        <div class="frame certificate-frame" id="certificateFrame">
+            <h2>شهادة العمر الجزائرية 🏆</h2>
+            <p id="certificateName"></p>
+            <p id="certificateTitle"></p>
+            <p id="certificateAge"></p>
+            <p id="certificateZodiac"></p>
+            <p id="certificateComment"></p>
+            <p id="certificateDate"></p>
+            <p id="certificateStamp">معتمد من الحومة 🇩🇿</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            darkModeToggle.innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        // Auto-format and validate date input
+        const birthdateInput = document.getElementById('birthdate');
+        birthdateInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) value = value.slice(0, 2) + '/' + value.slice(2);
+            if (value.length > 5) value = value.slice(0, 5) + '/' + value.slice(5);
+            e.target.value = value.slice(0, 10);
+        });
+
+        // Validate date
+        function validateDate(day, month, year) {
+            try {
+                const date = new Date(`${year}-${month}-${day}`);
+                const today = new Date();
+                return date instanceof Date && !isNaN(date) && date <= today && date.getFullYear() >= 1900;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Get Zodiac Sign
+        function getZodiacSign(day, month) {
+            const zodiacs = [
+                { name: "الجدي", start: "12-22", end: "01-19", comment: "يا الجدي، هادي ومليان حكمة زي الصحراء! 🏜️" },
+                { name: "الدلو", start: "01-20", end: "02-18", comment: "الدلو، مختلف كيما نسيم البحر! 🌊" },
+                { name: "الحوت", start: "02-19", end: "03-20", comment: "الحوت، قلبك كبير زي قسنطينة! ❤️" },
+                { name: "الحمل", start: "03-21", end: "04-19", comment: "الحمل، نار وطاقة زي شمس الجزاير! 🔥" },
+                { name: "الثور", start: "04-20", end: "05-20", comment: "الثور، ثابت كيما جبال الأوراس! 🏔️" },
+                { name: "الجوزاء", start: "05-21", end: "06-20", comment: "الجوزاء، مليان حياة زي قهوة الصباح! ☕" },
+                { name: "السرطان", start: "06-21", end: "07-22", comment: "السرطان، عاطفي زي أغنية راي! 🎶" },
+                { name: "الأسد", start: "07-23", end: "08-22", comment: "الأسد، زعيم الحومة! 🦁" },
+                { name: "العذراء", start: "08-23", end: "09-22", comment: "العذراء، دقيق كيما زليج! 🖼️" },
+                { name: "الميزان", start: "09-23", end: "10-22", comment: "الميزان، متوازن زي طبق كسكس! 🍲" },
+                { name: "العقرب", start: "10-23", end: "11-21", comment: "العقرب، غامض كيما ليل الصحراء! 🌙" },
+                { name: "القوس", start: "11-22", end: "12-21", comment: "القوس، مغامر زي رحلة لتيمقاد! 🏛️" }
+            ];
+            const dateStr = `${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            const zodiac = zodiacs.find(z => {
+                const [startMonth, startDay] = z.start.split('-');
+                const [endMonth, endDay] = z.end.split('-');
+                return (dateStr >= z.start && dateStr <= z.end) ||
+                       (z.start > z.end && (dateStr >= z.start || dateStr <= z.end));
+            });
+            return zodiac ? { name: zodiac.name, comment: zodiac.comment } : { name: "غير معروف", commment: "" };
+        }
+
+        // Calculate fun stats
+        function calculateFunStats(ageInDays) {
+            const heartBeats = Math.floor(ageInDays * 24 * 60 * 70);
+            const sleepHours = Math.floor(ageInDays * 8);
+            return `نبضات قلبك: <strong>${heartBeats.toLocaleString()}</strong> نبضة! 😍<br>ساعات نومك: <strong>${sleepHours.toLocaleString()}</strong> ساعة! 😴`;
+        }
+
+        // Generate advice
+        function generateAdvice(age, dialect) {
+            const adviceList = {
+                darja: {
+                    young: ["روح اتعلم شيء جديد، العمر لسه قدامك! 📚", "جرب هواية، يمكن تصير نجم! 🌟"],
+                    adult: ["خلّي الحياة زي الكسكس، مليانة لذة! 🍲", "استثمر في نفسك، المستقبل يستناك! 💼"],
+                    senior: ["استمتع كيما قهوة الصباح! ☕", "شارك حكمتك مع الصغار! 🧠"]
+                },
+                kabyle: {
+                    young: ["Ruḥ ssuq-d tɣuri, tudert tettawi! 📚", "Ɣer yiwen amezruy, ad tebḍiḍ! 🌟"],
+                    adult: ["Tudert am tala, tɛum-d s lḥikma! 🍲", "Ruḥ sɛu lǧehd, lǧil yettṛaǧu! 💼"],
+                    senior: ["Qim deg kra n lḥaḍra am atay! ☕", "Bḍu lḥikma nnek d yessawalen! 🧠"]
+                }
+            };
+            const category = age < 18 ? 'young' : age < 50 ? 'adult' : 'senior';
+            const advice = adviceList[dialect][category];
+            return advice[Math.floor(Math.random() * advice.length)];
+        }
+
+        // Game Logic
+        let gameScore = 0;
+        const gameQuestions = [
+            { q: "تحب تاكل الكسكس يوم الجمعة؟ 🍲", positive: true },
+            { q: "تشرب القهوة أكثر من 3 مرات في اليوم؟ ☕", positive: false },
+            { q: "تعرف تغني أغنية راي قديمة؟ 🎶", positive: true },
+            { q: "تتفرج على مباريات الكرة حتى لو نص الليل؟ ⚽", positive: true }
+        ];
+        function startGame() {
+            gameScore = 0;
+            const gameContainer = document.getElementById('gameContainer');
+            gameContainer.style.display = 'block';
+            askGameQuestion();
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+        function askGameQuestion() {
+            const question = gameQuestions[Math.floor(Math.random() * gameQuestions.length)];
+            document.getElementById('gameQuestion').innerHTML = question.q;
+            sessionStorage.setItem('currentQuestion', JSON.stringify(question));
+        }
+        function answerGame(answer) {
+            const question = JSON.parse(sessionStorage.getItem('currentQuestion'));
+            if ((answer && question.positive) || (!answer && !question.positive)) {
+                gameScore++;
+            }
+            if (gameScore >= 2) {
+                const titles = [
+                    "شيخ الحومة 🏆",
+                    "نجم الكسكس 🌟",
+                    "ملك الراي 🎤",
+                    "بطل قسنطينة 💪"
+                ];
+                document.getElementById('gameResult').innerHTML = `مبروك! إنت: <strong>${titles[Math.floor(Math.random() * titles.length)]}</strong>`;
+                document.getElementById('gameContainer').style.display = 'none';
+                const successSound = document.getElementById('successSound');
+                successSound.play().catch(() => console.log('صوت النجاح غير مدعوم'));
+            } else {
+                askGameQuestion();
+            }
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        // Historical Events and Memories
+        let currentEventIndex = 0;
+        let currentMemoryIndex = 0;
+        const memoriesData = [
+            { year: 1962, text: "سنة الاستقلال! الجزائر تحررت 🇩🇿", image: "images/1962_independence.jpg", video: "https://www.youtube.com/embed/sample1962" },
+            { year: 1990, text: "المنتخب يفوز بكأس إفريقيا! 🏆", image: "images/1990_afcon.jpg", video: "https://www.youtube.com/embed/sample1990" },
+            { year: 1991, text: "أغنية ’ديدي‘ للشاب خالد تطير! 🎶", image: "images/1991_didi.jpg", video: "https://www.youtube.com/watch?v=sR3zltBmasQ" },
+            { year: 2019, text: "ثورة الابتسامة تبدأ! 😊", image: "images/2019_hirak.jpg", video: "https://www.youtube.com/embed/sample2019" }
+        ];
+        const historicalEvents = [
+            { year: 1962, event: "الجزائر تحصل على الاستقلال! 🇩🇿" },
+            { year: 1990, event: "المنتخب الجزائري يفوز بكأس إفريقيا! 🏆" },
+            { year: 1991, event: "إطلاق أغنية ’ديدي‘ للشاب خالد! 🎶" },
+            { year: 2009, event: "الجزائر تتأهل لكأس العالم بعد مباراة تاريخية! ⚽" },
+            { year: 2014, event: "الجزائر تصل لدور الـ16 في كأس العالم! 💪" },
+            { year: 2019, event: "ثورة الابتسامة تبدأ في الجزائر! 😊" },
+            { year: 2019, event: "المنتخب يفوز بكأس إفريقيا مرة ثانية! 🏆" }
+        ];
+        function showHistoryEvent(year) {
+            const userYear = parseInt(sessionStorage.getItem('birthYear') || year);
+            const events = historicalEvents.filter(e => e.year >= userYear);
+            if (events.length === 0) {
+                document.getElementById('historyEvent').innerHTML = "ما عندناش أحداث لهذا العام! 😅";
+                return;
+            }
+            currentEventIndex = Math.min(currentEventIndex, events.length - 1);
+            currentEventIndex = Math.max(currentEventIndex, 0);
+            document.getElementById('historyEvent').innerHTML = events[currentEventIndex].event;
+            document.getElementById('historyContainer').style.display = 'block';
+        }
+        function prevEvent() {
+            currentEventIndex--;
+            showHistoryEvent();
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+        function nextEvent() {
+            currentEventIndex++;
+            showHistoryEvent();
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+        function showMemory(year) {
+            const userYear = parseInt(sessionStorage.getItem('birthYear') || year);
+            const memories = memoriesData.filter(m => m.year >= userYear);
+            if (memories.length === 0) {
+                document.getElementById('memoriesText').innerHTML = "ما عندناش ذكريات لهذا العام! 😅";
+                document.getElementById('memoriesMedia').innerHTML = "";
+                return;
+            }
+            currentMemoryIndex = Math.min(currentMemoryIndex, memories.length - 1);
+            currentMemoryIndex = Math.max(currentMemoryIndex, 0);
+            const memory = memories[currentMemoryIndex];
+            document.getElementById('memoriesText').innerHTML = memory.text;
+            document.getElementById('memoriesMedia').innerHTML = `
+                <img src="${memory.image}" alt="ذكرى ${memory.year}">
+                <iframe src="${memory.video}" title="ذكرى ${memory.year}"></iframe>
+            `;
+            document.getElementById('memoriesContainer').style.display = 'block';
+        }
+        function prevMemory() {
+            currentMemoryIndex--;
+            showMemory();
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+        function nextMemory() {
+            currentMemoryIndex++;
+            showMemory();
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        // Stats Logic
+        function updateStats(age, year, dialect) {
+            let ages = JSON.parse(localStorage.getItem('ages') || '[]');
+            let years = JSON.parse(localStorage.getItem('years') || '[]');
+            let dialects = JSON.parse(localStorage.getItem('dialects') || '[]');
+            ages.push(age);
+            years.push(year);
+            dialects.push(dialect);
+            localStorage.setItem('ages', JSON.stringify(ages));
+            localStorage.setItem('years', JSON.stringify(years));
+            localStorage.setItem('dialects', JSON.stringify(dialects));
+            const mostCommonAge = ages.sort((a, b) =>
+                ages.filter(v => v === a).length - ages.filter(v => v === b).length
+            ).pop();
+            const mostCommonYear = years.sort((a, b) =>
+                years.filter(v => v === a).length - years.filter(v => v === b).length
+            ).pop();
+            const mostCommonDialect = dialects.sort((a, b) =>
+                dialects.filter(v => v === a).length - dialects.filter(v => v === b).length
+            ).pop();
+            document.getElementById('statsVisitors').innerHTML = `عدد الزوار: <strong>${Math.floor(Math.random() * 10000) + 1000}</strong>`;
+            document.getElementById('statsAges').innerHTML = `أكثر عمر: <strong>${mostCommonAge}</strong> سنة`;
+            document.getElementById('statsDialects').innerHTML = `أكثر لهجة: <strong>${mostCommonDialect === 'darja' ? 'دارجة' : 'قبايلية'}</strong>`;
+            document.getElementById('statsContainer').style.display = 'block';
+        }
+
+        // Fake Age Counter
+        function updateVisitorCounter() {
+            const comments = [
+                "حتى الجيران جاو يحسبو! 😎",
+                "الدزاير كلها هنا! 🚀",
+                "حسبنا أعمار الصحراء كلها! 🏜️"
+            ];
+            const count = Math.floor(Math.random() * 1000000) + 100000;
+            document.getElementById('visitorCounter').innerHTML = `أعمار محسوبة: <strong>${count.toLocaleString()}</strong>! ${comments[Math.floor(Math.random() * comments.length)]}`;
+        }
+
+        function calculateAge() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const friendId = urlParams.get('friend');
+            const birthdateValue = document.getElementById('birthdate').value;
+            const userName = document.getElementById('userName').value.trim() || "جزائري مجهول";
+            const customTitle = document.getElementById('customTitle').value.trim() || "بطل الحومة";
+            const dialect = document.getElementById('dialect').value;
+            const frameStyle = document.getElementById('frameStyle').value;
+            const bgColor = document.getElementById('bgColor').value;
+
+            if (!birthdateValue.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                alert('التاريخ غالط، يا خو! 😅');
+                return;
+            }
+
+            const [day, month, year] = birthdateValue.split('/').map(Number);
+            if (!validateDate(day, month, year)) {
+                alert('تاريخ الميلاد غير صحيح أو في المستقبل!');
+                return;
+            }
+
+            const birthdate = new Date(`${year}-${month}-${day}`);
+            const today = new Date();
+            let age = today.getFullYear() - birthdate.getFullYear();
+            const monthDifference = today.getMonth() - birthdate.getMonth();
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthdate.getDate())) {
+                age--;
+            }
+
+            const resultDiv = document.getElementById('result');
+            const funnyCommentDiv = document.getElementById('funnyComment');
+            const zodiacSignDiv = document.getElementById('zodiacSign');
+            const funStatsDiv = document.getElementById('funStats');
+            const adviceDiv = document.getElementById('advice');
+
+            resultDiv.innerHTML = `<i class="fas fa-user"></i> يا ${userName}، عمرك هو: <strong>${age}</strong> سنة!`;
+
+            // Calculate zodiac sign
+            const zodiac = getZodiacSign(day.toString(), month.toString());
+            zodiacSignDiv.innerHTML = `برجك: <strong>${zodiac.name}</strong>! ${zodiac.comment}`;
+
+            // Calculate fun stats
+            const ageInDays = Math.floor((today - birthdate) / (1000 * 60 * 60 * 24));
+            funStatsDiv.innerHTML = calculateFunStats(ageInDays);
+
+            // Generate advice
+            adviceDiv.innerHTML = `نصيحة ليك: <strong>${generateAdvice(age, dialect)}</strong>`;
+
+            // Comments
+            let comments = [];
+            if (dialect === "darja") {
+                if (age < 18) {
+                    comments = [
+                        "يا صغير، روح نام ولا تنسى الواجبات! 📚",
+                        "عمرك زي قهوة الصباح، كل ما يطول يحلى! ☕",
+                        "إنت قد الدزاير، مليان حياة! 🇩🇿"
+                    ];
+                } else if (age >= 18 && age < 25) {
+                    comments = [
+                        "شاب عامر، روح شوف لك حياة! 💪",
+                        "العمر زي طبق كسكس، مليان لذة! 🍲",
+                        "روح اتعلم، المستقبل زي جسر قسنطينة! 🌉"
+                    ];
+                } else if (age >= 25 && age < 50) {
+                    comments = [
+                        "استقر وخلّي الحياة زي قهوة الصباح! ☕",
+                        "العمر زي أغنية راي، كل ما تكبر تحلى! 🎶",
+                        "روح جيب لقب فخم زي ملك الحومة! 🏆"
+                    ];
+                } else {
+                    comments = [
+                        "يا عمي، استمتع زي شاي في الصحراء! 🌴",
+                        "العمر زي قصبة الجزائر، مليان حكايات! 🏛️",
+                        "حكمتك كيما زليج، دايمة! 🖼️"
+                    ];
+                }
+            } else if (dialect === "kabyle") {
+                if (age < 18) {
+                    comments = [
+                        "A winu aqcic, ruḥ ghas i tɣuri! 📚",
+                        "Lɛemrek am tirga n Tizi, d asuf! 🏞️",
+                        "Ruḥ ssuq-d tafat, tudert tettawi! 🌟"
+                    ];
+                } else if (age >= 18 && age < 25) {
+                    comments = [
+                        "Argaz ameqran, ruḥ af-d tudert! 💪",
+                        "Lɛemrek am azzar n yewet, yettban! 🌱",
+                        "Ruḥ ssuq-d tafat, tudert tettawi! 🌟"
+                    ];
+                } else if (age >= 25 && age < 50) {
+                    comments = [
+                        "Ruḥ ssuq-d tafat, tudert tettawi! 🌟",
+                        "Lɛemrek am tala n Djurdjura, d lḥikma! 🏔️",
+                        "Ruḥ af-d tayri, am akken yella deg Tizi! 💍"
+                    ];
+                } else {
+                    comments = [
+                        "A winu amɣar, ruḥ qim deg laman! 😅",
+                        "Lɛemrek am taɣect n yennayer, d lḥikma! 🎉",
+                        "Ruḥ ssuq-d tafat, tudert tettawi! 🌟"
+                    ];
+                }
+            }
+
+            const randomComment = comments[Math.floor(Math.random() * comments.length)];
+            funnyCommentDiv.innerHTML = randomComment;
+
+            // Store data for sharing
+            sessionStorage.setItem('userName', userName);
+            sessionStorage.setItem('customTitle', customTitle);
+            sessionStorage.setItem('age', age);
+            sessionStorage.setItem('birthYear', year);
+            sessionStorage.setItem('birthMonth', month);
+            sessionStorage.setItem('birthDay', day);
+            sessionStorage.setItem('zodiac', zodiac.name);
+            sessionStorage.setItem('zodiacComment', zodiac.comment);
+            sessionStorage.setItem('comment', randomComment);
+            sessionStorage.setItem('funStats', funStatsDiv.innerHTML);
+            sessionStorage.setItem('advice', adviceDiv.innerHTML);
+            sessionStorage.setItem('frameStyle', frameStyle);
+            sessionStorage.setItem('bgColor', bgColor);
+
+            // Handle friend's calculation
+            if (friendId) {
+                sessionStorage.setItem(`friendResult_${friendId}`, JSON.stringify({ name: userName, age }));
+                alert(`تم إرسال عمر ${userName} (${age} سنة) إلى صاحبك!`);
+            }
+
+            // Start game
+            startGame();
+
+            // Show history and memories
+            showHistoryEvent(year);
+            showMemory(year);
+
+            // Update stats
+            updateStats(age, year, dialect);
+
+            // Show Share Buttons
+            document.querySelectorAll('.share-button').forEach(btn => btn.style.display = 'block');
+            document.querySelector('.download-button').style.display = 'block';
+            document.querySelector('.qr-button').style.display = 'block';
+            document.querySelector('.certificate-button').style.display = 'block';
+            document.querySelector('.print-button').style.display = 'block';
+            document.querySelector('.friend-button').style.display = 'block';
+            document.querySelector('.calendar-button').style.display = 'block';
+            if (deferredPrompt) {
+                document.getElementById('installButton').style.display = 'block';
+            }
+            document.getElementById('socialShare').style.display = 'flex';
+
+            // Check for friend's result
+            const friendResults = Object.keys(sessionStorage)
+                .filter(key => key.startsWith('friendResult_'))
+                .map(key => JSON.parse(sessionStorage.getItem(key)));
+            if (friendResults.length > 0) {
+                document.getElementById('friendResult').innerHTML = friendResults
+                    .map(r => `صاحبك ${r.name} عمره ${r.age} سنة!`).join('<br>');
+            }
+
+            // Play success sound
+            const successSound = document.getElementById('successSound');
+            successSound.play().catch(() => console.log('صوت النجاح غير مدعوم'));
+        }
+
+        function shareResult() {
+            const frameStyle = sessionStorage.getItem('frameStyle') || 'default';
+            const bgColor = sessionStorage.getItem('bgColor') || 'white';
+            const shareFrame = document.getElementById('shareFrame');
+            shareFrame.className = `frame ${frameStyle}`;
+            shareFrame.style.background = bgColor;
+
+            const userName = sessionStorage.getItem('userName');
+            const resultDiv = `يا ${userName}، عمرك هو: ${sessionStorage.getItem('age')} سنة!`;
+            const funnyCommentDiv = sessionStorage.getItem('comment');
+            const zodiacSignDiv = `برجك: ${sessionStorage.getItem('zodiac')}! ${sessionStorage.getItem('zodiacComment')}`;
+            const funStatsDiv = sessionStorage.getItem('funStats');
+            const adviceDiv = sessionStorage.getItem('advice');
+            const gameResultDiv = document.getElementById('gameResult').innerText;
+            const date = new Date().toLocaleDateString();
+
+            // Update Share Container Content
+            document.getElementById('shareResultText').innerText = resultDiv + ' 🇩🇿';
+            document.getElementById('shareCommentText').innerText = funnyCommentDiv;
+            document.getElementById('shareZodiacSign').innerText = zodiacSignDiv;
+            document.getElementById('shareFunStats').innerText = funStatsDiv;
+            document.getElementById('shareAdvice').innerText = adviceDiv;
+            document.getElementById('shareGameResult').innerText = gameResultDiv;
+            document.getElementById('shareDateText').innerText = `تاريخ المشاركة: ${date} ☕`;
+
+            // Show Share Container
+            const shareContainer = document.getElementById('shareContainer');
+            shareContainer.style.display = 'block';
+
+            // Capture Share Container as Image
+            setTimeout(() => {
+                html2canvas(shareContainer, { scale: 1, useCORS: true }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = `عمرك_بالجزائرية_${date}.png`;
+                    link.click();
+                    shareContainer.style.display = 'none';
+                    const successSound = document.getElementById('successSound');
+                    successSound.play().catch(() => console.log('صوت النجاح غير مدعوم'));
+                }).catch(err => {
+                    console.error('خطأ في إنشاء الصورة:', err);
+                    alert('عذرًا، حدث خطأ أثناء تحميل الصورة!');
+                });
+            }, 100);
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function downloadResult() {
+            const frameStyle = sessionStorage.getItem('frameStyle') || 'default';
+            const bgColor = sessionStorage.getItem('bgColor') || 'white';
+            const shareFrame = document.getElementById('shareFrame');
+            shareFrame.className = `frame ${frameStyle}`;
+            shareFrame.style.background = bgColor;
+
+            const userName = sessionStorage.getItem('userName');
+            const resultDiv = `يا ${userName}، عمرك هو: ${sessionStorage.getItem('age')} سنة!`;
+            const funnyCommentDiv = sessionStorage.getItem('comment');
+            const zodiacSignDiv = `برجك: ${sessionStorage.getItem('zodiac')}! ${sessionStorage.getItem('zodiacComment')}`;
+            const funStatsDiv = sessionStorage.getItem('funStats');
+            const adviceDiv = sessionStorage.getItem('advice');
+            const gameResultDiv = document.getElementById('gameResult').innerText;
+            const date = new Date().toLocaleDateString();
+
+            // Update Share Container Content
+            document.getElementById('shareResultText').innerText = resultDiv + ' 🇩🇿';
+            document.getElementById('shareCommentText').innerText = funnyCommentDiv;
+            document.getElementById('shareZodiacSign').innerText = zodiacSignDiv;
+            document.getElementById('shareFunStats').innerText = funStatsDiv;
+            document.getElementById('shareAdvice').innerText = adviceDiv;
+            document.getElementById('shareGameResult').innerText = gameResultDiv;
+            document.getElementById('shareDateText').innerText = `تاريخ المشاركة: ${date} ☕`;
+
+            // Show Share Container
+            const shareContainer = document.getElementById('shareContainer');
+            shareContainer.style.display = 'block';
+
+            // Generate PDF
+            setTimeout(() => {
+                html2canvas(shareContainer, { scale: 2, useCORS: true }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+                    const imgWidth = 190;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    const yPos = (297 - imgHeight) / 2; // Center vertically on A4 (297mm height)
+                    pdf.addImage(imgData, 'PNG', 10, yPos, imgWidth, imgHeight, '', 'MEDIUM');
+                    pdf.save(`عمرك_بالجزائرية_${date}.pdf`);
+                    shareContainer.style.display = 'none';
+                    const successSound = document.getElementById('successSound');
+                    successSound.play().catch(() => console.log('صوت النجاح غير مدعوم'));
+                }).catch(err => {
+                    console.error('خطأ في إنشاء PDF:', err);
+                    alert('عذرًا، حدث خطأ أثناء تحميل PDF!');
+                });
+            }, 100);
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function printCertificate() {
+            generateCertificate(true);
+            setTimeout(() => {
+                window.print();
+                const clickSound = document.getElementById('clickSound');
+                clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+            }, 200);
+        }
+
+        function generateFriendLink() {
+            const friendId = Math.random().toString(36).substring(2, 10);
+            const friendLink = `${window.location.href.split('?')[0]}?friend=${friendId}`;
+            navigator.clipboard.write(friendLink).then(() => {
+                alert(`رابط صاحبك جاهز! انسخه وشاركه معاه:\n${friendLink}`);
+            });
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function addToGoogleCalendar() {
+            const name = sessionStorage.getItem('userName') || 'جزائري مجهول';
+            const day = sessionStorage.getItem('birthDay').padStart(2, '0');
+            const month = sessionStorage.getItem('birthMonth').padStart(2, '0');
+            const year = new Date().getFullYear();
+            const startDate = `${year}${month}${day}`;
+            const nextYear = year + 1;
+            const endDate = `${nextYear}${month}${day}`;
+            const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=عيد ميلاد ${encodeURIComponent(name)}&dates=${startDate}/${endDate}&recur=RRULE:FREQ=YEARLY&sf=true&output=xml`;
+            window.open(calendarUrl, '_blank');
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function shareToAll() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'حساب العمر الجزائري 😎',
+                    text: `اكتشفت عمري بطريقة مضحكة! جربوها: ${window.location.href}`,
+                    url: window.location.href
+                }).catch(err => console.error('خطأ في المشاركة:', err));
+            } else {
+                alert('خاصية المشاركة غير مدعومة! جرب الأزرار الأخرى.');
+            }
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function shareToWhatsApp() {
+            const text = encodeURIComponent(`عمري حسب حاسبة العمر الجزائرية! 😎 اكتشف عمرك: ${window.location.href}`);
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function shareToFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function shareToX() {
+            const text = encodeURIComponent('اكتشفت عمري بطريقة جزائرية مضحكة! 😎 جربوها!');
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function shareToTelegram() {
+            const text = encodeURIComponent(`عمري حسب حاسبة العمر الجزائرية! 😎 اكتشف عمرك: ${window.location.href}`);
+            window.open(`https://t.me/share/url?url=${text}`, '_blank');
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function copyLink() {
+            navigator.clipboard.write(window.location.href).then(() => {
+                alert('تم نسخ الرابط!');
+            });
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function generateQR() {
+            const userName = sessionStorage.getItem('userName');
+            const age = sessionStorage.getItem('age');
+            const qrText = `${window.location.href}?name=${encodeURIComponent(userName)}&age=${age}`;
+            const qrCodeDiv = document.getElementById('qrCode');
+            qrCodeDiv.innerHTML = '';
+            qrCodeDiv.style.display = 'block';
+            try {
+                QRCode.toCanvas(qrText, { width: 200, margin: 2 }, function (error, canvas) {
+                    if (error) {
+                        console.error('خطأ في إنشاء QR:', error);
+                        alert('عذرًا، حدث خطأ أثناء إنشاء رمز QR!');
+                        qrCodeDiv.style.display = 'none';
+                        return;
+                    }
+                    qrCodeDiv.appendChild(canvas);
+                });
+                setTimeout(() => {
+                    qrCodeDiv.style.display = 'none';
+                }, 10000);
+                const qrSound = document.getElementById('qrSound');
+                qrSound.play().catch(() => console.log('صوت QR غير مدعوم'));
+            } catch (err) {
+                console.error('خطأ في إنشاء QR:', err);
+                alert('عذرًا، حدث خطأ أثناء إنشاء رمز QR!');
+                qrCodeDiv.style.display = 'none';
+            }
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        function generateCertificate(forPrint = false) {
+            const frameStyle = sessionStorage.getItem('frameStyle') || 'default';
+            const bgColor = sessionStorage.getItem('bgColor') || 'white';
+            const certificateFrame = document.getElementById('certificateFrame');
+            certificateFrame.className = `frame certificate-frame ${frameStyle}`;
+            certificateFrame.style.background = bgColor;
+
+            const userName = sessionStorage.getItem('userName');
+            const customTitle = sessionStorage.getItem('customTitle');
+            const age = sessionStorage.getItem('age');
+            const zodiac = sessionStorage.getItem('zodiac');
+            const comment = sessionStorage.getItem('comment');
+            const date = new Date().toLocaleDateString();
+
+            document.getElementById('certificateName').innerText = `الاسم: ${userName} 🇩🇿`;
+            document.getElementById('certificateTitle').innerText = `اللقب: ${customTitle}`;
+            document.getElementById('certificateAge').innerText = `العمر: ${age} سنة`;
+            document.getElementById('certificateZodiac').innerText = `البرج: ${zodiac}`;
+            document.getElementById('certificateComment').innerText = `تعليق: ${comment}`;
+            document.getElementById('certificateDate').innerText = `تاريخ الإصدار: ${date} ☕`;
+
+            const certificateContainer = document.getElementById('certificateContainer');
+            certificateContainer.style.display = 'block';
+
+            if (!forPrint) {
+                setTimeout(() => {
+                    html2canvas(certificateContainer, { scale: 2, useCORS: true }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = imgData;
+                        link.download = `شهادة_عمر_${userName}_${date}.png`;
+                        link.click();
+                        certificateContainer.style.display = 'none';
+                        const successSound = document.getElementById('successSound');
+                        successSound.play().catch(() => console.log('صوت النجاح غير مدعوم'));
+                    }).catch(err => {
+                        console.error('خطأ في إنشاء الشهادة:', err);
+                        alert('عذرًا، حدث خطأ أثناء إنشاء الشهادة!');
+                        certificateContainer.style.display = 'none';
+                    });
+                }, 100);
+            }
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installButton').style.display = 'block';
+        });
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('تم تثبيت التطبيق');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+            const clickSound = document.getElementById('clickSound');
+            clickSound.play().catch(() => console.log('صوت النقرة غير مدعوم'));
+        }
+    </script>
+</body>
+</html>
